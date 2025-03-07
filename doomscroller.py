@@ -27,11 +27,36 @@ level_3_posts = [
 
 post_levels = [level_0_posts, level_1_posts, level_2_posts, level_3_posts]
 
+user_comments = [
+    "You left a thoughtful comment.",
+    "Your comment doesn't seem to work, as if someone has removed it ...",
+    "Your comment got flagged for offensive language.",
+    "Your comment got flagged for misinformation.",
+    "Someone replied to your comment: 'L take'",
+    "Someone replied to your comment: 'Did you know? The correct definition of the word ...'"
+]
+
+usernames = [
+    "SourceOfIllumination",
+    "Randy Sillier Guitar Channel",
+    "Band Triple Turtle",
+    "PBS Sports",
+    "the Logspast",
+    "DryRejective",
+    "turtlecabaret",
+    "Kafka",
+    "thickchickenpie",
+]
+
 def generate_post(scroll_count):
     """Generate a random post, changing by the amount the user has scrolled"""
     level = min(scroll_count // 5, len(post_levels) -1) # increase level every 5 scrolls, and ensure it doesn't go out of bounds when checking post_levels[level]
     post = random.choice(post_levels[level])
-    return post
+    user = random.choice(usernames)
+
+    print(user)
+    print(post)
+    print(f"{random.randint(1,100)} comments | {random.randint(1,9999)} likes")
 
 def doomscroll():
     """Main doomscroll loop"""
@@ -42,8 +67,12 @@ def doomscroll():
         command = input("> ").lower()
 
         if command == "scroll":
-            print("\n" + generate_post(scroll_count) + "\n")
+            generate_post(scroll_count)
             scroll_count += 1
+        elif command == "like" and scroll_count > 0:
+            print("You liked the post!")
+        elif command == "comment" and scroll_count > 0:
+            print(random.choice(user_comments))
         elif command == "stop":
             print("You have escaped the scrolling, for now ..")
             print(f"You scrolled through {scroll_count} post(s)!")
@@ -53,12 +82,10 @@ def doomscroll():
 
 doomscroll()
 
-# add likes
-# add comments
+
 # add ascii for post layout on CLI
-# add way to generate posts
-# user can comment on posts
-# user can like posts
-# events if user interacts with certain posts
-# log which posts user does not interact with
-# theme can be it slowly gets weirder? or more surreal??
+# move posts to a separate file
+# user commenting on particular posts creates certain responses
+# user liking certain posts creates certain responses
+# if user ignores certain posts, create a response
+# theme can be it slowly gets weirder? or more surreal?? -> introduced levels,
