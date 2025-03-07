@@ -50,6 +50,13 @@ usernames = [
     "thickchickenpie",
 ]
 
+# user data dictionary for how the user is interacting
+user_data = {
+    "likes" : 0,
+    "comments" : 0,
+    "ignored_posts" : -1,
+}
+
 def text_effect(text):
     """For printing text with a typing-type effect"""
     for char in text:
@@ -70,22 +77,52 @@ def generate_post(scroll_count):
 def doomscroll():
     """Main doomscroll loop"""
     scroll_count = 0
+    liked = False
+    commented = False
+
     print("Welcome to DOOMS. Type 'scroll' to continue, 'like' to like, 'comment' to comment, or 'stop' to exit.")
 
     while True:
         command = input("> ").lower()
 
         if command == "scroll":
+
+            if not liked and not commented:
+                user_data["ignored_posts"] += 1 # increment in user data if the user ignored the post
+            
             generate_post(scroll_count)
             scroll_count += 1
+
+            liked = False
+            commented = False
+
         elif command == "like" and scroll_count > 0:
-            print("You liked the post!")
+            if liked:
+                print("You've already liked this post!")
+            else:
+                liked = True
+                user_data["likes"] += 1
+
+                print("You liked the post!")
+
         elif command == "comment" and scroll_count > 0:
-            print(random.choice(user_comments))
+            if commented:
+                print("You've already commented on this post!")
+            else:
+                commented = True
+                user_data["comments"] += 1
+
+                print(random.choice(user_comments))
+
         elif command == "stop":
             print("You have escaped the scrolling, for now ..")
             print(f"You scrolled through {scroll_count} post(s)!")
+
+            if user_data["ignored_posts"]== -1: # if user stops instantly, correct ignored_posts to 0
+                user_data["ignored_posts"] = 0
+            print(user_data)
             break
+
         else:
             print("Invalid command. Please try 'scroll', 'like', 'comment' or 'stop'.")
 
