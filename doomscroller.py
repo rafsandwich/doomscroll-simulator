@@ -1,13 +1,28 @@
+import random
+
+posts = [
+    "I was just trying to clear my acne .. *cut to cutting board*",
+    "'what do you think it's gonna be?', 'i'm the uncle i think it'll be a girl say less' #boyorgirl?",
+    "AI generated food baffles cuisine experts, quoted saying 'I can't believe it's not butter'"
+
+]
+
+def generate_post(scroll_count):
+    """Generate a random post, changing by the amount the user has scrolled"""
+    level = scroll_count // 5 # not yet used
+    post = random.choice(posts)
+    return post
+
 def doomscroll():
     """Main doomscroll loop"""
     scroll_count = 0
-    print("Welcome to DOOMS. Type 'scroll' to continue, or 'stop' to exit")
+    print("Welcome to DOOMS. Type 'scroll' to continue, or 'stop' to exit.")
 
     while True:
         command = input("> ").lower()
 
         if command == "scroll":
-            print("Random placeholder content!")
+            print("\n" + generate_post(scroll_count) + "\n")
             scroll_count += 1
         elif command == "stop":
             print("You have escaped the scrolling, for now ..")
