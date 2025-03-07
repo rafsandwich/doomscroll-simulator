@@ -1,4 +1,6 @@
 import random
+import sys
+import time
 
 # first 5 scrolls
 level_0_posts = [
@@ -48,20 +50,27 @@ usernames = [
     "thickchickenpie",
 ]
 
+def text_effect(text):
+    """For printing text with a typing-type effect"""
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush() # remove the buffer
+        time.sleep(0.01)
+
 def generate_post(scroll_count):
     """Generate a random post, changing by the amount the user has scrolled"""
     level = min(scroll_count // 5, len(post_levels) -1) # increase level every 5 scrolls, and ensure it doesn't go out of bounds when checking post_levels[level]
     post = random.choice(post_levels[level])
     user = random.choice(usernames)
 
-    print(user)
-    print(post)
-    print(f"{random.randint(1,100)} comments | {random.randint(1,9999)} likes")
+    text_effect(user + "\n")
+    text_effect(post + "\n")
+    text_effect(f"{random.randint(1,100)} comments | {random.randint(1,9999)} likes" + "\n")
 
 def doomscroll():
     """Main doomscroll loop"""
     scroll_count = 0
-    print("Welcome to DOOMS. Type 'scroll' to continue, 'comment' to comment, or 'stop' to exit.")
+    print("Welcome to DOOMS. Type 'scroll' to continue, 'like' to like, 'comment' to comment, or 'stop' to exit.")
 
     while True:
         command = input("> ").lower()
@@ -78,7 +87,7 @@ def doomscroll():
             print(f"You scrolled through {scroll_count} post(s)!")
             break
         else:
-            print("Invalid command. Please try 'scroll' or 'stop'.")
+            print("Invalid command. Please try 'scroll', 'like', 'comment' or 'stop'.")
 
 doomscroll()
 
