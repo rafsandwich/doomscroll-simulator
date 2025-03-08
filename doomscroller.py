@@ -86,6 +86,16 @@ def text_effect(text, speed):
         sys.stdout.flush() # remove the buffer
         time.sleep(speed)
 
+def load_ascii_art(filename="ascii_art.txt"):
+    """Loads ASCII art from a text file and returns a list of drawings.
+        All Ascii art sourced from ASCII Art Archive www.asciiart.eu !"""
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            art = file.read().strip().split("\n===\n")  # split ASCII by '===' delimiter into a list
+            return art
+    except FileNotFoundError:
+        return ["ASCII art not found"]
+
 def get_post_rarity():
     """Generate a random post rarity, weighted by the values in the post_rarity dict"""
     rarities = list(post_rarity.keys()) # list containing post rarity keys
@@ -110,6 +120,8 @@ def generate_post(scroll_count, username):
 
     user = random.choice(usernames)
 
+    ascii_art = random.choice(ascii_art_list)
+
     rarity = get_post_rarity()
     rarity_appearances[rarity] += 1
 
@@ -117,19 +129,7 @@ def generate_post(scroll_count, username):
     text_effect("\n"+"="*len(post)+"\n", post_speed)
     text_effect(user+"\n", post_speed)
     text_effect("-"*len(post)+"\n", post_speed)
-    print(r"""
-
-                                   ._ o o
-                                   \_`-)|_
-                                ,""       \ 
-                              ,"  ## |   ಠ ಠ. 
-                            ," ##   ,-\__    `.
-                          ,"       /     `--._;)
-                        ,"     ## /
-                      ,"   ##    /
-
-
-                """) # giraffe?
+    print(ascii_art)
     text_effect(post+"\n", post_speed)
     text_effect("-"*len(post)+"\n", post_speed)
     text_effect(f"💬 {random.randint(1,100)} comments | ❤️ {random.randint(1,9999)} likes"+"\n", post_speed)
@@ -217,6 +217,7 @@ def doomscroll():
         else:
             print("Invalid command. Please try 'scroll', 'like', 'comment' or 'stop'.")
 
+ascii_art_list = load_ascii_art()
 doomscroll()
 
 
