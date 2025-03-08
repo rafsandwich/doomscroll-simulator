@@ -31,9 +31,9 @@ post_levels = [level_0_posts, level_1_posts, level_2_posts, level_3_posts]
 
 # dictionary for tracking posts rarity percentage
 post_rarity = {
-    "Common" : 65,
+    "Common" : 67,
     "Uncommon" : 25,
-    "Rare" : 9,
+    "Rare" : 7,
     "Mythical" : 1
 }
 
@@ -92,10 +92,22 @@ def get_post_rarity():
     weights = list(post_rarity.values()) # list containing post rarity values
     return random.choices(rarities, weights, k=1)[0] # list of rarities, list of weights from keys, pick 1 element, return single element from output list
 
-def generate_post(scroll_count):
+def generate_post(scroll_count, username):
     """Generate a random post, changing by the amount the user has scrolled"""
     level = min(scroll_count // 5, len(post_levels) -1) # increase level every 5 scrolls, and ensure it doesn't go out of bounds when checking post_levels[level]
-    post = random.choice(post_levels[level])
+
+    targeted_posts = [
+        f"Why does @{username} keep commenting so much?",
+        f"I've got a really obsessive fan, their name starts with {username[0]} and ends with {username[-1]}...",
+        f"What are you searching for, {username}?",
+        f"Mx. {username[0].upper()}, I've changed the ads for you. ☣️ I hope you like it."
+    ]
+
+    if user_data["comments"] >= 5 and random.random() <0.1: # if user has made enough comments, 10% chance they get a targeted post
+        post = random.choice(targeted_posts)
+    else:
+        post = random.choice(post_levels[level]) # else, get a post for the level they are currently on
+
     user = random.choice(usernames)
 
     rarity = get_post_rarity()
@@ -139,6 +151,10 @@ def doomscroll():
     commented = False
 
     ignored_warning = False
+    
+    text_effect("🛡️ To create an account, please enter a username: ", prompt_speed)
+    username = input()
+    text_effect("📶 Connecting ... ... ✅\n", caution_speed)
 
     print("\n🛜 Welcome to DOOMS. Type 'scroll' to continue, 'like' to like, 'comment' to comment, or 'stop' to exit.")
 
@@ -150,7 +166,7 @@ def doomscroll():
             if not liked and not commented:
                 user_data["ignored_posts"] += 1 # increment in user data if the user ignored the post
             
-            generate_post(scroll_count)
+            generate_post(scroll_count, username)
             scroll_count += 1
 
             if user_data["ignored_posts"] == 6 and not ignored_warning:
@@ -158,7 +174,7 @@ def doomscroll():
                 ignored_warning = True
 
             if scroll_count == 5:    # level 1
-                text_effect("\n⚠️ Caution: Unconfirmed reports of oddities are being reported by DOOMS powerusers tonight. \n", caution_speed)
+                text_effect("\n⚠️ Caution: Unconfirmed reports of 'oddities' are being reported by DOOMS powerusers tonight. \n", caution_speed)
             elif scroll_count == 10: # level 2
                 text_effect("\n🔺 WARNING: DOOMS is UNST4BLE. All users are suggested to LOG OFF IMMEDIATELY. \n", caution_speed)
             elif scroll_count == 15: # level 3
@@ -177,7 +193,7 @@ def doomscroll():
                 liked = True
                 user_data["likes"] += 1
 
-                print("❤️ You liked the post! ")
+                print("\n❤️ You liked the post! ")
 
         elif command == "comment" and scroll_count > 0:
             if commented:
@@ -204,10 +220,15 @@ def doomscroll():
 doomscroll()
 
 
-# add ascii for post layout on CLI
+# add ascii art for post on CLI
+
 # move posts to a separate file
-# user commenting on particular posts creates certain responses
-# user liking certain posts creates certain responses
+
 # theme can be it slowly gets weirder? or more surreal?? -> introduced levels,
-# different rarity of posts, like basic, uncommon etc. and 'random' choice reflects rarity
+
+# stop users from using 'stop' if they have scrolled too far, and maybe pass a random check to actually escape the program
+
 # stats command to display rarities encountered amongst other things
+# add secret commands:
+    # >help >free >dooms 
+    # other commands hidden in certain posts, like user finds weird string -> >dksoka -> does something weird
