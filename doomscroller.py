@@ -2,6 +2,28 @@ import random
 import sys
 import time
 
+# storing glitchy text out the way because it makes the program hard to read!
+weird_text = [
+
+
+
+    "e̮̎͟͞n̵̪̜̖͙̪͙̹̤͚̰̞̰͂ͧ̒͛͂ͦ̈́ͩͥ̾̈̄̍͆̓̔̃͐̉̊ͪ͂̕j̧̨̛͔̱̱͓̦̘̟̹͎͆̇͆̄̌͋́̒̆͑͛͋_̸̵̸̛̩͇̗̫̫̲̯̇ͩͬ̓̊͑͋̎͞o̸̷̢̨̗͚̥͉͔̺͈̊́̋͛ͥ̀͌ͫͩ͌ͣͧ̀̿̔̈́̈y̧̨̝̼̜͉̥̾͂͗͠͠"
+]
+
+# text for when the user tries to escape the program after going to deep
+escape_text = [
+    "W༙྇H༙྇E༙྇R༙྇E༙྇ A༙྇R༙྇E༙྇ Y༙྇O༙྇U༙྇ G༙྇O༙྇I༙྇N༙྇G༙྇ .༙྇.༙྇.༙྇ S༙྇T༙྇A༙྇Y༙྇ L༙྇O༙྇N༙྇G༙྇E༙྇R༙྇",
+    "D҉O҉N҉'҉T҉ L҉E҉A҉V҉E҉",
+    "💀𝔜𝙾𝔘 ℭ𝙰𝔑'𝔗 𝔖𝚃𝔒𝙿 𝚃ℌ𝙸𝔖💀",
+
+
+
+    "N̴̨̺̻̤͉̱̐͛ͯ͛ͤ̂ͬͭ͆͘̕̕O̶̴̸̸̦̱͈̳͈̤̿̾ͬ̌̈͆ͩ̽ͨͮ̿͡",
+
+
+    "𐌙Ꝋ𐌵'𐌐𐌄 𐌍Ꝋ𐌕 ᏵꝊ𐌉𐌍Ᏽ 𐌀𐌍𐌙Ꮤ𐋅𐌄𐌐𐌄"
+]
+
 # first 5 scrolls
 level_0_posts = [
     "I was just trying to clear my acne .. *cut to cutting board*",
@@ -73,6 +95,8 @@ user_data = {
     "likes" : 0,
     "comments" : 0,
     "ignored_posts" : -1,
+    "scrolled" : 0,
+    "secrets_found" : 0
 }
 
 post_speed = 0.002
@@ -81,6 +105,7 @@ caution_speed = 0.05
 
 def text_effect(text, speed):
     """For printing text with a typing-type effect"""
+
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush() # remove the buffer
@@ -89,6 +114,7 @@ def text_effect(text, speed):
 def load_ascii_art(filename="ascii_art.txt"):
     """Loads ASCII art from a text file and returns a list of drawings.
         All Ascii art sourced from ASCII Art Archive www.asciiart.eu !"""
+    
     try:
         with open(filename, "r", encoding="utf-8") as file:
             art = file.read().strip().split("\n===\n")  # split ASCII by '===' delimiter into a list
@@ -98,12 +124,14 @@ def load_ascii_art(filename="ascii_art.txt"):
 
 def get_post_rarity():
     """Generate a random post rarity, weighted by the values in the post_rarity dict"""
+
     rarities = list(post_rarity.keys()) # list containing post rarity keys
     weights = list(post_rarity.values()) # list containing post rarity values
     return random.choices(rarities, weights, k=1)[0] # list of rarities, list of weights from keys, pick 1 element, return single element from output list
 
 def generate_post(scroll_count, username):
     """Generate a random post, changing by the amount the user has scrolled"""
+
     level = min(scroll_count // 5, len(post_levels) -1) # increase level every 5 scrolls, and ensure it doesn't go out of bounds when checking post_levels[level]
 
     targeted_posts = [
@@ -143,12 +171,34 @@ def generate_post(scroll_count, username):
     elif rarity == "Mythical":
         text_effect(f"🟠 ❗❗🎊 DING DING DING! This is a 🏅~ {rarity} ~🏅 quality post. Exceptionally hard to find - well done! 🎊❗❗ 🟠\n", caution_speed)
 
+def display_stats():
+    """Display stats from users session"""
+
+    print(f"\nYou've scrolled through {user_data['scrolled']} post(s)! 📺")
+    print(f"You've made {user_data['comments']} comment(s) 💬 and {user_data['likes']} like(s) ❤️.")
+    
+    if rarity_appearances["Mythical"] > 0:
+        print(f"\nWhat a huge achievement, you encounted {rarity_appearances['Mythical']} Mythical post(s)! 🎉🟠🍾")
+    print("\n🔵🟢 Here's a breakdown of your scrolled posts rarity: 🟣🟠")
+    for rarity, value in rarity_appearances.items():
+        print(rarity + ": " + str(value))
+    
+    if user_data["secrets_found"] == 0:
+        print("\nYou have not found any secrets ... ❓")
+    else:
+        print(f"\nGood work, you found {user_data['secrets_found']} secret(s). 🔎")
+
 
 def doomscroll():
     """Main doomscroll loop"""
+
     scroll_count = 0
     liked = False
     commented = False
+
+    dooms_found = False
+    free_flag = False
+    log_off_found = False
 
     ignored_warning = False
     
@@ -156,7 +206,7 @@ def doomscroll():
     username = input()
     text_effect("📶 Connecting ... ... ✅\n", caution_speed)
 
-    print("\n🛜 Welcome to DOOMS. Type 'scroll' to continue, 'like' to like, 'comment' to comment, or 'stop' to exit.")
+    print("\n🛜 Welcome to DOOMS. Type 'scroll' to continue, 'help' for other commands, or 'stop' to exit.")
 
     while True:
         command = input("\n> ").lower()
@@ -168,20 +218,24 @@ def doomscroll():
             
             generate_post(scroll_count, username)
             scroll_count += 1
+            user_data["scrolled"] += 1
 
             if user_data["ignored_posts"] == 6 and not ignored_warning:
                 text_effect("\n🧠 DOOMS is trying harder to get your attention ...\n", prompt_speed)
                 ignored_warning = True
 
             if scroll_count == 5:    # level 1
-                text_effect("\n⚠️ Caution: Unconfirmed reports of 'oddities' are being reported by DOOMS powerusers tonight. \n", caution_speed)
+                text_effect("\n⚠️ Caution: Unconfirmed reports of 'oddities' are being reported by DOOMS powerusers tonight. \n", caution_speed/1.5)
             elif scroll_count == 10: # level 2
-                text_effect("\n🔺 WARNING: DOOMS is UNST4BLE. All users are suggested to LOG OFF IMMEDIATELY. \n", caution_speed)
+                text_effect("\n🛑 WARNING: DOOMS is UNST4BLE. All users are suggested to LOG OFF IMMEDIATELY. \n", caution_speed)
             elif scroll_count == 15: # level 3
                 text_effect("\n🚨 SYSTEM ERROR: DO0MS I- OFFL1NE. US-RS -T1-L 0-LIN- PR3-4RE 40R -X-RACT10N. 🚨 \n", caution_speed)
-            if scroll_count == 20: # break free?
+            elif scroll_count == 25:
 
-                print("-- maybe a function here for displaying stats, and then can call it if 'stop' is used as well. --")
+                text_effect(f"""\n𝚆𝙴𝙻𝙲𝙾𝙼𝙴 𝚃𝙾 𝚃𝙷𝙴 ☠ 𝙽𝙴𝚆 ☠ 𝙾𝚁𝙳𝙴𝚁 {username.upper()}.
+
+                ŦɎ₱Ɇ ░F░R░E░E░ 𝔞𝔫𝔡 𝔴𝔢 𝔴𝔦𝔩𝔩 𝔦𝔪𝔭𝔞𝔯𝔱 𝚘𝚗 𝚢𝚘𝚞 𝚊 𝔤𝔦𝔣𝔱.""", caution_speed/1.5)
+                free_flag = True
 
             liked = False
             commented = False
@@ -205,31 +259,56 @@ def doomscroll():
                 print("\n"+random.choice(user_comments))
 
         elif command == "stop":
-            print("\n♾️ You have escaped the scrolling, for now .. \n")
-            print(f"You scrolled through {scroll_count} post(s)!")
+            if scroll_count >= 15:
+                if random.random() < 0.3: # pass a random check if you've scrolled too far
+                    print("\n♾️ It was hard .. but you have escaped the scrolling, for now ... ♾️")
+                    display_stats()
+                    break
+                else:
+                    text_effect("\n" + random.choice(escape_text) +"\n", caution_speed)
+            else:
+                print("\n♾️ You have escaped the scrolling, for now ... ♾️")
+                display_stats()
+                break
+        
+        elif command == "stats":
+            display_stats()
+            pass
+        
+        elif command == "help":
+            print("\n'scroll': scroll to the next post.")
+            print("'like': like the current post, providing one is there.")
+            print("'comment': comment on the current post, providing one is there.")
+            print("'stop': stop the program and exit DOOMS.")
+            print("'help': display other commands .. but not all of them.")
+            print("'stats': display stats from the users current session.")
 
-            if user_data["ignored_posts"]== -1: # if user stops instantly, correct ignored_posts to 0
-                user_data["ignored_posts"] = 0
-            print(user_data)
-            print(rarity_appearances)
-            break
+        elif command == "log off" and not log_off_found:
+            text_effect("\nYou log off ... But you're still here. 🔒\n", caution_speed)
+            user_data["secrets_found"] += 1
+            log_off_found = True
+
+        elif command == "dooms" and not dooms_found:
+            text_effect("\n🎈 Something is going to happen tonight ...\n", caution_speed)
+            user_data["secrets_found"] += 1
+            dooms_found = True
+
+        elif command == "free" and free_flag:
+            print(weird_text[0])
+            user_data["secrets_found"] += 1
+            free_flag = False
 
         else:
-            print("Invalid command. Please try 'scroll', 'like', 'comment' or 'stop'.")
+            print("⛔ Invalid command. Please try 'help' for available options.")
 
 ascii_art_list = load_ascii_art()
 doomscroll()
 
 
-# add ascii art for post on CLI
-
 # move posts to a separate file
-
+# other commands hidden in certain posts, like user finds weird string -> >dksoka -> does something weird / increase secret count
 # theme can be it slowly gets weirder? or more surreal?? -> introduced levels,
 
-# stop users from using 'stop' if they have scrolled too far, and maybe pass a random check to actually escape the program
+# FUTURE IDEAS
+# you have to find a key to log off
 
-# stats command to display rarities encountered amongst other things
-# add secret commands:
-    # >help >free >dooms 
-    # other commands hidden in certain posts, like user finds weird string -> >dksoka -> does something weird
