@@ -151,7 +151,7 @@ def generate_post(scroll_count, username):
     ascii_art = random.choice(ascii_art_list)
 
     rarity = get_post_rarity()
-    rarity_appearances[rarity] += 1
+    rarity_appearances[rarity] += 1 # increment the rarity encountered count
 
     # handling 'drawing' the post and its associated contents
     text_effect("\n"+"="*len(post)+"\n", post_speed)
@@ -184,7 +184,7 @@ def display_stats():
         print(rarity + ": " + str(value))
     
     if user_data["secrets_found"] == 0:
-        print("\nYou have not found any secrets ... ❓")
+        print("\n❓ You have not found any secrets ... ")
     else:
         print(f"\nGood work, you found {user_data['secrets_found']} secret(s). 🔎")
 
@@ -202,8 +202,8 @@ def doomscroll():
 
     ignored_warning = False
     
-    text_effect("🛡️ To create an account, please enter a username: ", prompt_speed)
-    username = input()
+    text_effect("\n🛡️ To create an account, please enter a username: ", prompt_speed)
+    username = input().strip() or "You" # to deal with case username is empty or spaces
     text_effect("📶 Connecting ... ... ✅\n", caution_speed)
 
     print("\n🛜 Welcome to DOOMS. Type 'scroll' to continue, 'help' for other commands, or 'stop' to exit.")
@@ -260,7 +260,7 @@ def doomscroll():
 
         elif command == "stop":
             if scroll_count >= 15:
-                if random.random() < 0.3: # pass a random check if you've scrolled too far
+                if random.random() < 0.3: # pass a random weighted check if you've scrolled too far
                     print("\n♾️ It was hard .. but you have escaped the scrolling, for now ... ♾️")
                     display_stats()
                     break
@@ -273,7 +273,6 @@ def doomscroll():
         
         elif command == "stats":
             display_stats()
-            pass
         
         elif command == "help":
             print("\n'scroll': scroll to the next post.")
